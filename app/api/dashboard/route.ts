@@ -9,7 +9,7 @@ export async function GET() {
   try {
     await dbConnect();
 
-    const [products, stockRecords, branchCount, pendingCount, processedCount, failedCount] =
+    const [products, stockRecords, branchCount, pendingCount, processedCount, failedCount, recentMovements] =
       await Promise.all([
         Product.find().sort({ name: 1 }).lean(),
         Stock.find().populate('branch', 'name location').lean(),
@@ -17,6 +17,13 @@ export async function GET() {
         Movement.countDocuments({ status: 'pending' }),
         Movement.countDocuments({ status: 'processed' }),
         Movement.countDocuments({ status: 'failed' }),
+        Movement.find()
+          .sort({ createdAt: -1 })
+          .limit(10)
+          .populate('product', 'name sku')
+          .populate('fromBranch', 'name')
+          .populate('toBranch', 'name')
+          .lean(),
       ]);
 
     const stockByProduct = (stockRecords as any[]).reduce<
@@ -52,6 +59,7 @@ export async function GET() {
         failedMovements: failedCount,
       },
       products: enrichedProducts,
+      recentMovements,
     });
   } catch {
     return NextResponse.json({ error: 'Failed to load dashboard' }, { status: 500 });

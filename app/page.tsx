@@ -28,6 +28,18 @@ interface DashboardStats {
   failedMovements: number;
 }
 
+interface RecentMovement {
+  _id: string;
+  type: 'entry' | 'exit' | 'transfer';
+  product: { name: string; sku: string };
+  fromBranch?: { name: string };
+  toBranch?: { name: string };
+  quantity: number;
+  status: 'pending' | 'processed' | 'failed';
+  failureReason?: string;
+  createdAt: string;
+}
+
 interface StatCardProps {
   label: string;
   value: number | string;
@@ -55,6 +67,7 @@ function StatCard({ label, value, sub, accent = 'default' }: StatCardProps) {
 export default function HomePage() {
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [products, setProducts] = useState<ProductDashboard[]>([]);
+  const [recentMovements, setRecentMovements] = useState<RecentMovement[]>([]);
   const [expanded, setExpanded] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -64,6 +77,7 @@ export default function HomePage() {
       .then((data) => {
         setStats(data.stats);
         setProducts(data.products);
+        setRecentMovements(data.recentMovements ?? []);
       })
       .finally(() => setLoading(false));
   }, []);
@@ -199,6 +213,76 @@ export default function HomePage() {
                   </tr>
                 )}
               </>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Recent movements */}
+      <div className="bg-white rounded-xl border border-zinc-200 overflow-hidden mt-6">
+        <div className="px-6 py-4 border-b border-zinc-100 flex items-center justify-between">
+          <div>
+            <h2 className="text-sm font-semibold text-zinc-900">Recent movements</h2>
+            <p className="text-xs text-zinc-400 mt-0.5">Last 10 movements across all branches</p>
+          </div>
+          <a href="/movements" className="text-xs text-zinc-400 hover:text-zinc-900 transition-colors">
+            View all →
+          </a>
+        </div>
+        <table className="w-full text-sm">
+          <thead className="bg-zinc-50 text-left text-zinc-500">
+            <tr>
+              <th className="px-6 py-2 font-medium">Type</th>
+              <th className="px-6 py-2 font-medium">Product</th>
+              <th className="px-6 py-2 font-medium">From</th>
+              <th className="px-6 py-2 font-medium">To</th>
+              <th className="px-6 py-2 font-medium text-right">Qty</th>
+              <th className="px-6 py-2 font-medium">Status</th>
+              <th className="px-6 py-2 font-medium">Date</th>
+            </tr>
+          </thead>
+          <tbody className="bg-white">
+            {!loading && recentMovements.length === 0 && (
+              <tr>
+                <td colSpan={7} className="px-6 py-8 text-center text-zinc-400">
+                  No movements yet.
+                </td>
+              </tr>
+            )}
+            {loading && (
+              <tr>
+                <td colSpan={7} className="px-6 py-8 text-center text-zinc-400">
+                  Loading...
+                </td>
+              </tr>
+            )}
+            {recentMovements.map((m) => (
+              <tr key={m._id} className="border-t border-zinc-100 hover:bg-cyan-50 text-zinc-900 transition-colors">
+                <td className="px-6 py-3 capitalize text-zinc-500">{m.type}</td>
+                <td className="px-6 py-3">
+                  <span className="font-mono text-xs text-zinc-400 mr-1">{m.product?.sku}</span>
+                  {m.product?.name}
+                </td>
+                <td className="px-6 py-3 text-zinc-500">{m.fromBranch?.name ?? '—'}</td>
+                <td className="px-6 py-3 text-zinc-500">{m.toBranch?.name ?? '—'}</td>
+                <td className="px-6 py-3 text-right font-medium">{m.quantity}</td>
+                <td className="px-6 py-3">
+                  <span
+                    className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium ${
+                      m.status === 'processed'
+                        ? 'bg-green-100 text-green-800'
+                        : m.status === 'failed'
+                        ? 'bg-red-100 text-red-800'
+                        : 'bg-yellow-100 text-yellow-800'
+                    }`}
+                  >
+                    {m.status}
+                  </span>
+                </td>
+                <td className="px-6 py-3 text-xs text-zinc-400">
+                  {new Date(m.createdAt).toLocaleString()}
+                </td>
+              </tr>
             ))}
           </tbody>
         </table>
