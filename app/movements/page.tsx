@@ -55,6 +55,7 @@ export default function MovementsPage() {
   const [loading, setLoading] = useState(false);
   const [filterStatus, setFilterStatus] = useState('');
   const [filterBranch, setFilterBranch] = useState('');
+  const [triggering, setTriggering] = useState(false);
 
   async function fetchMovements() {
     const params = new URLSearchParams();
@@ -63,6 +64,17 @@ export default function MovementsPage() {
     const res = await fetch(`/api/movements?${params.toString()}`);
     const data = await res.json();
     setMovements(data);
+    return data as Movement[];
+  }
+
+  async function triggerWorker() {
+    setTriggering(true);
+    try {
+      await fetch('/api/worker', { method: 'POST' });
+      await fetchMovements();
+    } finally {
+      setTriggering(false);
+    }
   }
 
   useEffect(() => {
@@ -74,6 +86,15 @@ export default function MovementsPage() {
     fetchMovements();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filterStatus, filterBranch]);
+
+  // Auto-refresh every 3s while there are pending movements
+  useEffect(() => {
+    const hasPending = movements.some((m) => m.status === 'pending');
+    if (!hasPending) return;
+    const interval = setInterval(fetchMovements, 3000);
+    return () => clearInterval(interval);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [movements]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -108,10 +129,27 @@ export default function MovementsPage() {
 
   const showFrom = form.type === 'exit' || form.type === 'transfer';
   const showTo = form.type === 'entry' || form.type === 'transfer';
+  const pendingCount = movements.filter((m) => m.status === 'pending').length;
 
   return (
     <div className="max-w-5xl mx-auto p-8">
-      <h1 className="text-2xl font-semibold mb-6 text-zinc-900">Movements</h1>
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-2xl font-semibold text-zinc-900">Movements</h1>
+        <div className="flex items-center gap-3">
+          {pendingCount > 0 && (
+            <span className="text-xs text-yellow-700 bg-yellow-100 px-2 py-1 rounded-full">
+              {pendingCount} pending
+            </span>
+          )}
+          <button
+            onClick={triggerWorker}
+            disabled={triggering || pendingCount === 0}
+            className="text-sm px-4 py-2 rounded border bg-white text-zinc-900 hover:bg-zinc-50 disabled:opacity-40"
+          >
+            {triggering ? 'Processing...' : 'Process next'}
+          </button>
+        </div>
+      </div>
 
       {/* Form */}
       <form onSubmit={handleSubmit} className="mb-8 p-4 border rounded-lg bg-white space-y-3">
