@@ -46,7 +46,7 @@ export function DashboardPage() {
 
   return (
     <div className="max-w-5xl mx-auto p-8">
-      <h1 className="text-2xl font-semibold mb-2 text-zinc-900">Dashboard</h1>
+      <h1 className="text-2xl font-semibold mb-2 text-white">Dashboard</h1>
       <p className="text-sm text-zinc-500 mb-6">Products with total stock and stock per branch</p>
 
       <table className="w-full text-sm border rounded-lg overflow-hidden">

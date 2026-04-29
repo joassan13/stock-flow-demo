@@ -82,7 +82,7 @@ export default function ProductsPage() {
 
   return (
     <div className="max-w-4xl mx-auto p-8">
-      <h1 className="text-2xl font-semibold mb-6 text-zinc-900">Products</h1>
+      <h1 className="text-2xl font-semibold mb-6 text-white">Products</h1>
 
       {/* Form */}
       <form onSubmit={handleSubmit} className="mb-8 p-4 border rounded-lg bg-white space-y-3">

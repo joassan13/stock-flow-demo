@@ -134,7 +134,7 @@ export default function MovementsPage() {
   return (
     <div className="max-w-5xl mx-auto p-8">
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-semibold text-zinc-900">Movements</h1>
+        <h1 className="text-2xl font-semibold text-white">Movements</h1>
         <div className="flex items-center gap-3">
           {pendingCount > 0 && (
             <span className="text-xs text-yellow-700 bg-yellow-100 px-2 py-1 rounded-full">
@@ -259,10 +259,11 @@ export default function MovementsPage() {
 
       {/* Filters */}
       <div className="flex gap-3 mb-4">
+        <label className="text-sm text-zinc-500">Filter by:</label>
         <select
           value={filterStatus}
           onChange={(e) => setFilterStatus(e.target.value)}
-          className="border rounded px-3 py-2 text-sm text-zinc-900"
+          className="border rounded px-3 py-2 text-sm text-white bg-zinc-900"
         >
           <option value="">All statuses</option>
           <option value="pending">Pending</option>
@@ -270,10 +271,11 @@ export default function MovementsPage() {
           <option value="failed">Failed</option>
         </select>
 
+        <label className="text-sm text-zinc-500">Branch:</label>
         <select
           value={filterBranch}
           onChange={(e) => setFilterBranch(e.target.value)}
-          className="border rounded px-3 py-2 text-sm text-zinc-900"
+          className="border rounded px-3 py-2 text-sm text-white bg-zinc-900"
         >
           <option value="">All branches</option>
           {branches.map((b) => (

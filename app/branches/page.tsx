@@ -74,7 +74,7 @@ export default function BranchesPage() {
 
   return (
     <div className="max-w-3xl mx-auto p-8">
-      <h1 className="text-2xl font-semibold mb-6 text-zinc-900">Branches</h1>
+      <h1 className="text-2xl font-semibold mb-6 text-white">Branches</h1>
 
       {/* Form */}
       <form onSubmit={handleSubmit} className="mb-8 p-4 border rounded-lg bg-white space-y-3">
