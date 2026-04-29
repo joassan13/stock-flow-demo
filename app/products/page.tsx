@@ -101,6 +101,7 @@ export default function ProductsPage() {
           <input
             required
             placeholder="Nombre"
+            value={form.name}
             onChange={(e) => setForm({ ...form, name: e.target.value })}
             className="border rounded px-3 py-2 text-sm text-zinc-900 placeholder:text-zinc-400"
           />
@@ -110,12 +111,14 @@ export default function ProductsPage() {
             min="0"
             step="0.01"
             placeholder="Precio"
+            value={form.price}
             onChange={(e) => setForm({ ...form, price: e.target.value })}
             className="border rounded px-3 py-2 text-sm text-zinc-900 placeholder:text-zinc-400"
           />
           <input
             required
             placeholder="Categoría"
+            value={form.category}
             onChange={(e) => setForm({ ...form, category: e.target.value })}
             className="border rounded px-3 py-2 text-sm text-zinc-900 placeholder:text-zinc-400"
           />
@@ -161,7 +164,7 @@ export default function ProductsPage() {
             </tr>
           )}
           {products.map((p) => (
-            <tr key={p._id} className="border-t hover:bg-cyan-100">
+            <tr key={p._id} className={`border-t ${editingId === p._id ? 'bg-amber-50 ring-1 ring-inset ring-amber-300' : 'hover:bg-zinc-50'}`}>
               <td className="px-4 py-2 font-mono">{p.sku}</td>
               <td className="px-4 py-2">{p.name}</td>
               <td className="px-4 py-2">{p.category}</td>

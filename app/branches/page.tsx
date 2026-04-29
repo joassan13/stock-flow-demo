@@ -88,12 +88,14 @@ export default function BranchesPage() {
           <input
             required
             placeholder="Nombre"
+            value={form.name}
             onChange={(e) => setForm({ ...form, name: e.target.value })}
             className="border rounded px-3 py-2 text-sm text-zinc-900 placeholder:text-zinc-400"
           />
           <input
             required
             placeholder="Ubicación"
+            value={form.location}
             onChange={(e) => setForm({ ...form, location: e.target.value })}
             className="border rounded px-3 py-2 text-sm text-zinc-900 placeholder:text-zinc-400"
           />
@@ -137,7 +139,7 @@ export default function BranchesPage() {
             </tr>
           )}
           {branches.map((b) => (
-            <tr key={b._id} className="border-t bg-green hover:bg-cyan-100 text-zinc-900">
+            <tr key={b._id} className={`border-t text-zinc-900 ${editingId === b._id ? 'bg-amber-50 ring-1 ring-inset ring-amber-300' : 'hover:bg-zinc-50'}`}>
               <td className="px-4 py-2">{b.name}</td>
               <td className="px-4 py-2">{b.location}</td>
               <td className="px-4 py-2 flex gap-2 justify-end">
