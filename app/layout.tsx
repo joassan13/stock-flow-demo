@@ -23,6 +23,7 @@ const navLinks = [
   { href: "/products", label: "Products" },
   { href: "/branches", label: "Branches" },
   { href: "/movements", label: "Movements" },
+  { href: "/reports", label: "Reports" },
 ];
 
 export default function RootLayout({
