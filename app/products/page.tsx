@@ -75,18 +75,18 @@ export default function ProductsPage() {
   }
 
   async function handleDelete(id: string) {
-    if (!confirm('Delete this product?')) return;
+    if (!confirm('¿Eliminar este producto?')) return;
     await fetch(`/api/products/${id}`, { method: 'DELETE' });
     await fetchProducts();
   }
 
   return (
     <div className="max-w-4xl mx-auto p-8">
-      <h1 className="text-2xl font-semibold mb-6 text-white">Products</h1>
+      <h1 className="text-2xl font-semibold mb-6 text-white">Productos</h1>
 
       {/* Form */}
       <form onSubmit={handleSubmit} className="mb-8 p-4 border rounded-lg bg-white space-y-3">
-        <h2 className="font-medium text-lg text-zinc-900">{editingId ? 'Edit product' : 'New product'}</h2>
+        <h2 className="font-medium text-lg text-zinc-900">{editingId ? 'Editar producto' : 'Nuevo producto'}</h2>
 
         {error && <p className="text-red-600 text-sm">{error}</p>}
 
@@ -100,8 +100,7 @@ export default function ProductsPage() {
           />
           <input
             required
-            placeholder="Name"
-            value={form.name}
+            placeholder="Nombre"
             onChange={(e) => setForm({ ...form, name: e.target.value })}
             className="border rounded px-3 py-2 text-sm text-zinc-900 placeholder:text-zinc-400"
           />
@@ -110,15 +109,13 @@ export default function ProductsPage() {
             type="number"
             min="0"
             step="0.01"
-            placeholder="Price"
-            value={form.price}
+            placeholder="Precio"
             onChange={(e) => setForm({ ...form, price: e.target.value })}
             className="border rounded px-3 py-2 text-sm text-zinc-900 placeholder:text-zinc-400"
           />
           <input
             required
-            placeholder="Category"
-            value={form.category}
+            placeholder="Categoría"
             onChange={(e) => setForm({ ...form, category: e.target.value })}
             className="border rounded px-3 py-2 text-sm text-zinc-900 placeholder:text-zinc-400"
           />
@@ -130,7 +127,7 @@ export default function ProductsPage() {
             disabled={loading}
             className="bg-black text-white text-sm px-4 py-2 rounded hover:bg-zinc-800 disabled:opacity-50"
           >
-            {loading ? 'Saving...' : editingId ? 'Update' : 'Create'}
+            {loading ? 'Guardando...' : editingId ? 'Actualizar' : 'Crear'}
           </button>
           {editingId && (
             <button
@@ -138,7 +135,7 @@ export default function ProductsPage() {
               onClick={handleCancel}
               className="text-sm px-4 py-2 rounded border hover:bg-zinc-50"
             >
-              Cancel
+              Cancelar
             </button>
           )}
         </div>
@@ -149,22 +146,22 @@ export default function ProductsPage() {
         <thead className="bg-zinc-100 text-left text-zinc-600 uppercase">
           <tr>
             <th className="px-4 py-2">SKU</th>
-            <th className="px-4 py-2">Name</th>
-            <th className="px-4 py-2">Category</th>
-            <th className="px-4 py-2">Price</th>
+            <th className="px-4 py-2">Nombre</th>
+            <th className="px-4 py-2">Categoría</th>
+            <th className="px-4 py-2">Precio</th>
             <th className="px-4 py-2"></th>
           </tr>
         </thead>
-        <tbody>
+        <tbody className="bg-white text-zinc-900">
           {products.length === 0 && (
             <tr>
               <td colSpan={5} className="px-4 py-6 text-center text-zinc-400">
-                No products yet.
+                No hay productos aún.
               </td>
             </tr>
           )}
           {products.map((p) => (
-            <tr key={p._id} className="border-t hover:bg-zinc-800">
+            <tr key={p._id} className="border-t hover:bg-cyan-100">
               <td className="px-4 py-2 font-mono">{p.sku}</td>
               <td className="px-4 py-2">{p.name}</td>
               <td className="px-4 py-2">{p.category}</td>
@@ -174,13 +171,13 @@ export default function ProductsPage() {
                   onClick={() => handleEdit(p)}
                   className="text-xs px-3 py-1 border rounded hover:bg-zinc-100"
                 >
-                  Edit
+                  Editar
                 </button>
                 <button
                   onClick={() => handleDelete(p._id)}
                   className="text-xs px-3 py-1 border rounded text-red-600 hover:bg-red-50"
                 >
-                  Delete
+                  Eliminar
                 </button>
               </td>
             </tr>

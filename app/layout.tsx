@@ -15,15 +15,15 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "StockFlow",
-  description: "Multi-branch inventory management",
+  description: "Gestión de inventario multi-sucursal",
 };
 
 const navLinks = [
-  { href: "/", label: "Dashboard" },
-  { href: "/products", label: "Products" },
-  { href: "/branches", label: "Branches" },
-  { href: "/movements", label: "Movements" },
-  { href: "/reports", label: "Reports" },
+  { href: "/", label: "Inicio" },
+  { href: "/products", label: "Productos" },
+  { href: "/branches", label: "Sucursales" },
+  { href: "/movements", label: "Movimientos" },
+  { href: "/reports", label: "Reportes" },
 ];
 
 export default function RootLayout({
@@ -33,13 +33,13 @@ export default function RootLayout({
 }>) {
   return (
     <html
-      lang="en"
+      lang="es"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-zinc-50">
         <nav className="bg-white border-b border-zinc-200">
           <div className="max-w-5xl mx-auto px-8 flex items-center gap-6 h-12">
-            <span className="font-semibold text-zinc-900 text-sm">StockFlow</span>
+            <span className="font-semibold text-zinc-900 text-sm">StockFlow Demo</span>
             <div className="flex gap-4">
               {navLinks.map((link) => (
                 <Link

@@ -67,19 +67,19 @@ export default function BranchesPage() {
   }
 
   async function handleDelete(id: string) {
-    if (!confirm('Delete this branch?')) return;
+    if (!confirm('¿Eliminar esta sucursal?')) return;
     await fetch(`/api/branches/${id}`, { method: 'DELETE' });
     await fetchBranches();
   }
 
   return (
     <div className="max-w-3xl mx-auto p-8">
-      <h1 className="text-2xl font-semibold mb-6 text-white">Branches</h1>
+      <h1 className="text-2xl font-semibold mb-6 text-white">Sucursales</h1>
 
       {/* Form */}
       <form onSubmit={handleSubmit} className="mb-8 p-4 border rounded-lg bg-white space-y-3">
         <h2 className="font-medium text-lg text-zinc-900">
-          {editingId ? 'Edit branch' : 'New branch'}
+          {editingId ? 'Editar sucursal' : 'Nueva sucursal'}
         </h2>
 
         {error && <p className="text-red-600 text-sm">{error}</p>}
@@ -87,15 +87,13 @@ export default function BranchesPage() {
         <div className="grid grid-cols-2 gap-3">
           <input
             required
-            placeholder="Name"
-            value={form.name}
+            placeholder="Nombre"
             onChange={(e) => setForm({ ...form, name: e.target.value })}
             className="border rounded px-3 py-2 text-sm text-zinc-900 placeholder:text-zinc-400"
           />
           <input
             required
-            placeholder="Location"
-            value={form.location}
+            placeholder="Ubicación"
             onChange={(e) => setForm({ ...form, location: e.target.value })}
             className="border rounded px-3 py-2 text-sm text-zinc-900 placeholder:text-zinc-400"
           />
@@ -107,7 +105,7 @@ export default function BranchesPage() {
             disabled={loading}
             className="bg-black text-white text-sm px-4 py-2 rounded hover:bg-zinc-800 disabled:opacity-50"
           >
-            {loading ? 'Saving...' : editingId ? 'Update' : 'Create'}
+            {loading ? 'Guardando...' : editingId ? 'Actualizar' : 'Crear'}
           </button>
           {editingId && (
             <button
@@ -115,7 +113,7 @@ export default function BranchesPage() {
               onClick={handleCancel}
               className="text-sm px-4 py-2 rounded border hover:bg-zinc-50 text-zinc-900"
             >
-              Cancel
+              Cancelar
             </button>
           )}
         </div>
@@ -125,8 +123,8 @@ export default function BranchesPage() {
       <table className="w-full text-sm border rounded-lg overflow-hidden">
         <thead className="bg-zinc-100 text-left text-zinc-900 uppercase">
           <tr>
-            <th className="px-4 py-2">Name</th>
-            <th className="px-4 py-2">Location</th>
+            <th className="px-4 py-2">Nombre</th>
+            <th className="px-4 py-2">Ubicación</th>
             <th className="px-4 py-2"></th>
           </tr>
         </thead>
@@ -134,7 +132,7 @@ export default function BranchesPage() {
           {branches.length === 0 && (
             <tr>
               <td colSpan={3} className="px-4 py-6 text-center text-zinc-400">
-                No branches yet.
+                Aún no hay sucursales.
               </td>
             </tr>
           )}
@@ -147,13 +145,13 @@ export default function BranchesPage() {
                   onClick={() => handleEdit(b)}
                   className="text-xs px-3 py-1 border rounded hover:bg-zinc-800 hover:text-white"
                 >
-                  Edit
+                  Editar
                 </button>
                 <button
                   onClick={() => handleDelete(b._id)}
                   className="text-xs px-3 py-1 border rounded text-red-600 hover:bg-red-50"
                 >
-                  Delete
+                  Eliminar
                 </button>
               </td>
             </tr>

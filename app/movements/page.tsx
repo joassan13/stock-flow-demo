@@ -35,9 +35,9 @@ const emptyForm = {
 };
 
 const STATUS_LABELS: Record<string, string> = {
-  pending: 'Pending',
-  processed: 'Processed',
-  failed: 'Failed',
+  pending: 'Pendiente',
+  processed: 'Procesado',
+  failed: 'Fallido',
 };
 
 const STATUS_COLORS: Record<string, string> = {
@@ -134,11 +134,11 @@ export default function MovementsPage() {
   return (
     <div className="max-w-5xl mx-auto p-8">
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-semibold text-white">Movements</h1>
+        <h1 className="text-2xl font-semibold text-white">Movimientos</h1>
         <div className="flex items-center gap-3">
           {pendingCount > 0 && (
             <span className="text-xs text-yellow-700 bg-yellow-100 px-2 py-1 rounded-full">
-              {pendingCount} pending
+              {pendingCount} pendiente{pendingCount !== 1 ? 's' : ''}
             </span>
           )}
           <button
@@ -146,21 +146,21 @@ export default function MovementsPage() {
             disabled={triggering || pendingCount === 0}
             className="text-sm px-4 py-2 rounded border bg-white text-zinc-900 hover:bg-zinc-50 disabled:opacity-40"
           >
-            {triggering ? 'Processing...' : 'Process next'}
+            {triggering ? 'Procesando...' : 'Procesar siguiente'}
           </button>
         </div>
       </div>
 
       {/* Form */}
       <form onSubmit={handleSubmit} className="mb-8 p-4 border rounded-lg bg-white space-y-3">
-        <h2 className="font-medium text-lg text-zinc-900">New movement</h2>
+        <h2 className="font-medium text-lg text-zinc-900">Nuevo movimiento</h2>
 
         {error && <p className="text-red-600 text-sm">{error}</p>}
 
         <div className="grid grid-cols-2 gap-3">
           {/* Type */}
           <div className="flex flex-col gap-1">
-            <label className="text-xs text-zinc-500">Type</label>
+            <label className="text-xs text-zinc-500">Tipo</label>
             <select
               required
               value={form.type}
@@ -169,22 +169,22 @@ export default function MovementsPage() {
               }
               className="border rounded px-3 py-2 text-sm text-zinc-900"
             >
-              <option value="entry">Entry (purchase)</option>
-              <option value="exit">Exit (sale)</option>
-              <option value="transfer">Transfer between branches</option>
+              <option value="entry">Entrada (compra)</option>
+              <option value="exit">Salida (venta)</option>
+              <option value="transfer">Transferencia entre sucursales</option>
             </select>
           </div>
 
           {/* Product */}
           <div className="flex flex-col gap-1">
-            <label className="text-xs text-zinc-500">Product</label>
+            <label className="text-xs text-zinc-500">Producto</label>
             <select
               required
               value={form.product}
               onChange={(e) => setForm({ ...form, product: e.target.value })}
               className="border rounded px-3 py-2 text-sm text-zinc-900"
             >
-              <option value="">Select product...</option>
+              <option value="">Seleccionar producto...</option>
               {products.map((p) => (
                 <option key={p._id} value={p._id}>
                   {p.sku} — {p.name}
@@ -196,14 +196,14 @@ export default function MovementsPage() {
           {/* From branch */}
           {showFrom && (
             <div className="flex flex-col gap-1">
-              <label className="text-xs text-zinc-500">From branch</label>
+              <label className="text-xs text-zinc-500">Sucursal origen</label>
               <select
                 required
                 value={form.fromBranch}
                 onChange={(e) => setForm({ ...form, fromBranch: e.target.value })}
                 className="border rounded px-3 py-2 text-sm text-zinc-900"
               >
-                <option value="">Select branch...</option>
+                <option value="">Seleccionar sucursal...</option>
                 {branches.map((b) => (
                   <option key={b._id} value={b._id}>
                     {b.name}
@@ -216,14 +216,14 @@ export default function MovementsPage() {
           {/* To branch */}
           {showTo && (
             <div className="flex flex-col gap-1">
-              <label className="text-xs text-zinc-500">To branch</label>
+              <label className="text-xs text-zinc-500">Sucursal destino</label>
               <select
                 required
                 value={form.toBranch}
                 onChange={(e) => setForm({ ...form, toBranch: e.target.value })}
                 className="border rounded px-3 py-2 text-sm text-zinc-900"
               >
-                <option value="">Select branch...</option>
+                <option value="">Seleccionar sucursal...</option>
                 {branches.map((b) => (
                   <option key={b._id} value={b._id}>
                     {b.name}
@@ -235,12 +235,12 @@ export default function MovementsPage() {
 
           {/* Quantity */}
           <div className="flex flex-col gap-1">
-            <label className="text-xs text-zinc-500">Quantity</label>
+            <label className="text-xs text-zinc-500">Cantidad</label>
             <input
               required
               type="number"
               min="1"
-              placeholder="Quantity"
+              placeholder="Cantidad"
               value={form.quantity}
               onChange={(e) => setForm({ ...form, quantity: e.target.value })}
               className="border rounded px-3 py-2 text-sm text-zinc-900 placeholder:text-zinc-400"
@@ -253,31 +253,31 @@ export default function MovementsPage() {
           disabled={loading}
           className="bg-black text-white text-sm px-4 py-2 rounded hover:bg-zinc-800 disabled:opacity-50"
         >
-          {loading ? 'Registering...' : 'Register movement'}
+          {loading ? 'Registrando...' : 'Registrar movimiento'}
         </button>
       </form>
 
       {/* Filters */}
       <div className="flex gap-3 mb-4">
-        <label className="text-sm text-zinc-500">Filter by:</label>
+        <label className="text-sm text-zinc-500">Filtrar por:</label>
         <select
           value={filterStatus}
           onChange={(e) => setFilterStatus(e.target.value)}
           className="border rounded px-3 py-2 text-sm text-white bg-zinc-900"
         >
-          <option value="">All statuses</option>
-          <option value="pending">Pending</option>
-          <option value="processed">Processed</option>
-          <option value="failed">Failed</option>
+          <option value="">Todos los estados</option>
+          <option value="pending">Pendiente</option>
+          <option value="processed">Procesado</option>
+          <option value="failed">Fallido</option>
         </select>
 
-        <label className="text-sm text-zinc-500">Branch:</label>
+        <label className="text-sm text-zinc-500">Sucursal:</label>
         <select
           value={filterBranch}
           onChange={(e) => setFilterBranch(e.target.value)}
           className="border rounded px-3 py-2 text-sm text-white bg-zinc-900"
         >
-          <option value="">All branches</option>
+          <option value="">Todas las sucursales</option>
           {branches.map((b) => (
             <option key={b._id} value={b._id}>
               {b.name}
@@ -290,27 +290,27 @@ export default function MovementsPage() {
       <table className="w-full text-sm border rounded-lg overflow-hidden">
         <thead className="bg-zinc-100 text-left text-zinc-900">
           <tr>
-            <th className="px-4 py-2">Type</th>
-            <th className="px-4 py-2">Product</th>
-            <th className="px-4 py-2">From</th>
-            <th className="px-4 py-2">To</th>
-            <th className="px-4 py-2">Qty</th>
-            <th className="px-4 py-2">Status</th>
-            <th className="px-4 py-2">Reason</th>
-            <th className="px-4 py-2">Date</th>
+            <th className="px-4 py-2">Tipo</th>
+            <th className="px-4 py-2">Producto</th>
+            <th className="px-4 py-2">Origen</th>
+            <th className="px-4 py-2">Destino</th>
+            <th className="px-4 py-2">Cant.</th>
+            <th className="px-4 py-2">Estado</th>
+            <th className="px-4 py-2">Motivo</th>
+            <th className="px-4 py-2">Fecha</th>
           </tr>
         </thead>
         <tbody className="bg-white">
           {movements.length === 0 && (
             <tr>
               <td colSpan={8} className="px-4 py-6 text-center text-zinc-400">
-                No movements yet.
+                  Aún no hay movimientos.
               </td>
             </tr>
           )}
           {movements.map((m) => (
             <tr key={m._id} className="border-t hover:bg-cyan-100 text-zinc-900">
-              <td className="px-4 py-2 capitalize">{m.type}</td>
+              <td className="px-4 py-2 capitalize">{m.type === 'entry' ? 'Entrada' : m.type === 'exit' ? 'Salida' : 'Transferencia'}</td>
               <td className="px-4 py-2">
                 <span className="font-mono text-xs text-zinc-500">{m.product?.sku}</span>{' '}
                 {m.product?.name}

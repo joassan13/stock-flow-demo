@@ -23,9 +23,9 @@ function defaultRange() {
 }
 
 const TYPE_LABELS: Record<string, string> = {
-  entry: 'Entry (purchase)',
-  exit: 'Exit (sale)',
-  transfer: 'Transfer',
+  entry: 'Entrada (compra)',
+  exit: 'Salida (venta)',
+  transfer: 'Transferencia',
 };
 
 const TYPE_COLORS: Record<string, string> = {
@@ -69,14 +69,14 @@ export default function ReportsPage() {
   return (
     <div className="max-w-5xl mx-auto px-8 py-8">
       <div className="mb-8">
-        <h1 className="text-2xl font-semibold text-white">Reports</h1>
-        <p className="text-sm text-zinc-400 mt-1">Movement totals by type and by branch for a date range</p>
+        <h1 className="text-2xl font-semibold text-white">Reportes</h1>
+        <p className="text-sm text-zinc-400 mt-1">Totales de movimientos por tipo y por sucursal para un rango de fechas</p>
       </div>
 
       {/* Filters */}
       <div className="bg-white rounded-xl border border-zinc-200 px-6 py-5 mb-6 flex flex-wrap items-end gap-4">
         <div className="flex flex-col gap-1">
-          <label className="text-xs font-medium text-zinc-500">From</label>
+          <label className="text-xs font-medium text-zinc-500">Desde</label>
           <input
             type="date"
             value={from}
@@ -85,7 +85,7 @@ export default function ReportsPage() {
           />
         </div>
         <div className="flex flex-col gap-1">
-          <label className="text-xs font-medium text-zinc-500">To</label>
+          <label className="text-xs font-medium text-zinc-500">Hasta</label>
           <input
             type="date"
             value={to}
@@ -98,7 +98,7 @@ export default function ReportsPage() {
           disabled={loading}
           className="bg-black text-white text-sm px-5 py-2 rounded hover:bg-zinc-800 disabled:opacity-50"
         >
-          {loading ? 'Loading...' : 'Generate'}
+          {loading ? 'Cargando...' : 'Generar'}
         </button>
       </div>
 
@@ -109,7 +109,7 @@ export default function ReportsPage() {
           {/* Summary */}
           <div className="bg-white rounded-xl border border-zinc-200 px-6 py-5 mb-6 flex items-center gap-6">
             <div>
-              <p className="text-xs text-zinc-400 uppercase tracking-wide font-medium">Total movements</p>
+              <p className="text-xs text-zinc-400 uppercase tracking-wide font-medium">Total de movimientos</p>
               <p className="text-3xl font-bold text-zinc-900">{report.total}</p>
             </div>
             <div className="text-xs text-zinc-400 border-l pl-6">
@@ -122,21 +122,21 @@ export default function ReportsPage() {
             {/* By type */}
             <div className="bg-white rounded-xl border border-zinc-200 overflow-hidden">
               <div className="px-6 py-4 border-b border-zinc-100">
-                <h2 className="text-sm font-semibold text-zinc-900">By type</h2>
+                <h2 className="text-sm font-semibold text-zinc-900">Por tipo</h2>
               </div>
               <table className="w-full text-sm">
                 <thead className="bg-zinc-50 text-left text-zinc-500">
                   <tr>
-                    <th className="px-6 py-2 font-medium">Type</th>
-                    <th className="px-6 py-2 font-medium text-right">Count</th>
-                    <th className="px-6 py-2 font-medium text-right">% of total</th>
+                    <th className="px-6 py-2 font-medium">Tipo</th>
+                    <th className="px-6 py-2 font-medium text-right">Cantidad</th>
+                    <th className="px-6 py-2 font-medium text-right">% del total</th>
                   </tr>
                 </thead>
                 <tbody className="bg-white">
                   {report.byType.length === 0 && (
                     <tr>
                       <td colSpan={3} className="px-6 py-6 text-center text-zinc-400">
-                        No movements in range.
+                        Sin movimientos en el rango.
                       </td>
                     </tr>
                   )}
@@ -160,14 +160,14 @@ export default function ReportsPage() {
             {/* By branch */}
             <div className="bg-white rounded-xl border border-zinc-200 overflow-hidden">
               <div className="px-6 py-4 border-b border-zinc-100">
-                <h2 className="text-sm font-semibold text-zinc-900">By branch</h2>
+                <h2 className="text-sm font-semibold text-zinc-900">Por sucursal</h2>
               </div>
               <table className="w-full text-sm">
                 <thead className="bg-zinc-50 text-left text-zinc-500">
                   <tr>
-                    <th className="px-6 py-2 font-medium">Branch</th>
-                    <th className="px-6 py-2 font-medium text-right">As origin</th>
-                    <th className="px-6 py-2 font-medium text-right">As dest.</th>
+                    <th className="px-6 py-2 font-medium">Sucursal</th>
+                    <th className="px-6 py-2 font-medium text-right">Como origen</th>
+                    <th className="px-6 py-2 font-medium text-right">Como destino</th>
                     <th className="px-6 py-2 font-medium text-right">Total</th>
                   </tr>
                 </thead>
@@ -175,7 +175,7 @@ export default function ReportsPage() {
                   {report.byBranch.length === 0 && (
                     <tr>
                       <td colSpan={4} className="px-6 py-6 text-center text-zinc-400">
-                        No movements in range.
+                        Sin movimientos en el rango.
                       </td>
                     </tr>
                   )}
