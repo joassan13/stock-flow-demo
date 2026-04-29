@@ -9,6 +9,8 @@ export interface WorkerResult {
   error?: string;
 }
 
+const MAX_RETRIES = 2;
+
 export async function processNextMovement(): Promise<WorkerResult> {
   await dbConnect();
 
@@ -26,24 +28,35 @@ export async function processNextMovement(): Promise<WorkerResult> {
   const { type, product, fromBranch, toBranch, quantity } = movement;
 
   // --- Stock validation ---
-  // For exit and transfer, check that the origin branch has enough stock
-  // BEFORE touching any document. If not, mark as failed immediately.
   if (type === 'exit' || type === 'transfer') {
     const originStock = await Stock.findOne({ product, branch: fromBranch });
     const available = originStock?.quantity ?? 0;
 
     if (available < quantity) {
-      await Movement.findByIdAndUpdate(movement._id, {
-        $set: {
-          status: 'failed',
-          failureReason: `Insufficient stock at origin branch: ${available} available, ${quantity} requested`,
-        },
-      });
+      const failureReason = `Insufficient stock at origin branch: ${available} available, ${quantity} requested`;
 
+      if (movement.retries < MAX_RETRIES) {
+        // Still have retries left — put back to pending
+        await Movement.findByIdAndUpdate(movement._id, {
+          $set: { status: 'pending', failureReason },
+          $inc: { retries: 1 },
+        });
+        return {
+          processed: false,
+          movementId: String(movement._id),
+          error: `Insufficient stock (retry ${movement.retries + 1}/${MAX_RETRIES})`,
+        };
+      }
+
+      // Exhausted retries — mark as permanently failed
+      await Movement.findByIdAndUpdate(movement._id, {
+        $set: { status: 'failed', failureReason },
+        $inc: { retries: 1 },
+      });
       return {
         processed: false,
         movementId: String(movement._id),
-        error: 'Insufficient stock',
+        error: 'Insufficient stock — max retries reached',
       };
     }
   }
@@ -68,8 +81,6 @@ export async function processNextMovement(): Promise<WorkerResult> {
           { new: true, session }
         );
 
-        // Guard against a race condition: another process may have consumed
-        // the stock between the validation check above and this update.
         if (!updated) {
           throw new Error(
             'Stock became insufficient between validation and update (concurrent movement)'
@@ -80,16 +91,26 @@ export async function processNextMovement(): Promise<WorkerResult> {
 
     return { processed: true, movementId: String(movement._id) };
   } catch (err: any) {
-    // Revert to pending so retry logic (Commit 9) can handle it
-    await Movement.findByIdAndUpdate(movement._id, {
-      $set: { status: 'pending' },
-      $inc: { retries: 1 },
-    });
+    const failureReason = err.message ?? 'Unknown error';
+
+    if (movement.retries < MAX_RETRIES) {
+      // Put back to pending for retry
+      await Movement.findByIdAndUpdate(movement._id, {
+        $set: { status: 'pending', failureReason },
+        $inc: { retries: 1 },
+      });
+    } else {
+      // Exhausted retries — mark as permanently failed
+      await Movement.findByIdAndUpdate(movement._id, {
+        $set: { status: 'failed', failureReason },
+        $inc: { retries: 1 },
+      });
+    }
 
     return {
       processed: false,
       movementId: String(movement._id),
-      error: err.message ?? 'Unknown error',
+      error: failureReason,
     };
   } finally {
     await session.endSession();

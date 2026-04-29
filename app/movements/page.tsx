@@ -294,13 +294,14 @@ export default function MovementsPage() {
             <th className="px-4 py-2">To</th>
             <th className="px-4 py-2">Qty</th>
             <th className="px-4 py-2">Status</th>
+            <th className="px-4 py-2">Reason</th>
             <th className="px-4 py-2">Date</th>
           </tr>
         </thead>
         <tbody className="bg-white">
           {movements.length === 0 && (
             <tr>
-              <td colSpan={7} className="px-4 py-6 text-center text-zinc-400">
+              <td colSpan={8} className="px-4 py-6 text-center text-zinc-400">
                 No movements yet.
               </td>
             </tr>
@@ -319,6 +320,9 @@ export default function MovementsPage() {
                 <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${STATUS_COLORS[m.status]}`}>
                   {STATUS_LABELS[m.status]}
                 </span>
+              </td>
+              <td className="px-4 py-2 text-xs text-zinc-500 max-w-[200px]">
+                {m.failureReason ?? '—'}
               </td>
               <td className="px-4 py-2 text-zinc-500">
                 {new Date(m.createdAt).toLocaleString()}
