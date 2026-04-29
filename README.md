@@ -2,7 +2,7 @@
 
 Sistema de control de inventario multi-sucursal con procesamiento asíncrono de movimientos.
 
-**Demo en producción:** `https://stock-flow-demo.vercel.app` <!-- reemplazar con la URL real después del deploy -->
+**Demo en producción:** [https://stock-flow-demo-r6ze.vercel.app](https://stock-flow-demo-r6ze.vercel.app)
 
 ---
 
