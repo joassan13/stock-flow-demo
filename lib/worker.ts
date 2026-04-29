@@ -9,18 +9,10 @@ export interface WorkerResult {
   error?: string;
 }
 
-/**
- * Picks one pending movement and applies basic stock changes.
- * Returns whether a movement was processed and what happened.
- *
- * Validation (checking sufficient stock) is added in the next commit.
- * Retry logic is added after that.
- */
 export async function processNextMovement(): Promise<WorkerResult> {
   await dbConnect();
 
-  // Atomically claim one pending movement by changing its status to avoid
-  // double-processing if the worker is triggered concurrently.
+  // Atomically claim one pending movement to avoid double-processing under concurrency.
   const movement = await Movement.findOneAndUpdate(
     { status: 'pending' },
     { $set: { status: 'processed' } },
@@ -31,14 +23,37 @@ export async function processNextMovement(): Promise<WorkerResult> {
     return { processed: false };
   }
 
+  const { type, product, fromBranch, toBranch, quantity } = movement;
+
+  // --- Stock validation ---
+  // For exit and transfer, check that the origin branch has enough stock
+  // BEFORE touching any document. If not, mark as failed immediately.
+  if (type === 'exit' || type === 'transfer') {
+    const originStock = await Stock.findOne({ product, branch: fromBranch });
+    const available = originStock?.quantity ?? 0;
+
+    if (available < quantity) {
+      await Movement.findByIdAndUpdate(movement._id, {
+        $set: {
+          status: 'failed',
+          failureReason: `Insufficient stock at origin branch: ${available} available, ${quantity} requested`,
+        },
+      });
+
+      return {
+        processed: false,
+        movementId: String(movement._id),
+        error: 'Insufficient stock',
+      };
+    }
+  }
+
+  // --- Apply stock changes inside a transaction ---
   const session = await mongoose.startSession();
 
   try {
     await session.withTransaction(async () => {
-      const { type, product, fromBranch, toBranch, quantity } = movement;
-
       if (type === 'entry' || type === 'transfer') {
-        // Add stock to destination branch
         await Stock.findOneAndUpdate(
           { product, branch: toBranch },
           { $inc: { quantity } },
@@ -47,20 +62,28 @@ export async function processNextMovement(): Promise<WorkerResult> {
       }
 
       if (type === 'exit' || type === 'transfer') {
-        // Remove stock from origin branch
-        await Stock.findOneAndUpdate(
-          { product, branch: fromBranch },
+        const updated = await Stock.findOneAndUpdate(
+          { product, branch: fromBranch, quantity: { $gte: quantity } },
           { $inc: { quantity: -quantity } },
-          { session }
+          { new: true, session }
         );
+
+        // Guard against a race condition: another process may have consumed
+        // the stock between the validation check above and this update.
+        if (!updated) {
+          throw new Error(
+            'Stock became insufficient between validation and update (concurrent movement)'
+          );
+        }
       }
     });
 
     return { processed: true, movementId: String(movement._id) };
   } catch (err: any) {
-    // Revert status back to pending so retry logic (Commit 9) can handle it
+    // Revert to pending so retry logic (Commit 9) can handle it
     await Movement.findByIdAndUpdate(movement._id, {
       $set: { status: 'pending' },
+      $inc: { retries: 1 },
     });
 
     return {
